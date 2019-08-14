@@ -1,21 +1,45 @@
 var commands = {
-    /**
-     * Tests explicitly the results based on housing and down payment prices.
-     * @param {object} data {price: '', down: ''} - The price of the house and the down payment, both given as strings.
-     */
+    multClick: function(selector, num) {
+        for (let i=0; i < num; i++) {
+            this.click(selector)
+        }
+        return this
+    },
+
     testInputs: function (data) {
-        this
+            this
             .setValue('@priceField', data.price)
             .setValue('@downField', data.down)
-        for (let i = 0; i < 6; i++) {
-            this.click('@firstBtn')
+        this.multClick('@firstBtn', 2)
+        switch(data.bankrupt) {
+            case('both'): {
+                this.click('@bothBtn')
+                break
+            }
+            case('bankrupt'): {
+                this.click('@bankruptBtn')
+                break
+            }
+            case('foreclosure'): {
+                this.click('@foreclosureBtn')
+                break
+            }
+            default: {
+                this.click('@noBtn')
+            }
         }
-        this.expect.element('@message').text.to.equal(data.result)
+        this.multClick('@firstBtn', 3)
+        if (data.result) {
+            this.expect.element('@message').text.to.equal(data.result)
+        }else{
+            this.getText('@message', function(result){
+                console.log('Message reads: ' + result.value)
+            })
+        }
 
         return this
     }
 }
-
 module.exports = {
     url: 'http://localhost:3000/#/wSix',
     commands: [commands],
@@ -32,6 +56,11 @@ module.exports = {
         message: {
             selector: '(//*[@class="vert-align"]//*)[3]',
             locateStrategy: 'xpath'
-        }
+        },
+        //bankruptcy/foreclosure buttons
+        noBtn: '[value="Has never been in bankruptcy"]',
+        bankruptBtn: '[value="Has had bankruptcy before"]',
+        foreclosureBtn: '[value="Has had a foreclosure before"]',
+        bothBtn: '[value="Has had both a foreclosure and a bankruptcy"]'
     }
 }
