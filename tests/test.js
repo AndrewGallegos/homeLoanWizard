@@ -1,12 +1,3 @@
-var testInputs = (pageObject, data) => {
-    pageObject
-        .setValue('@priceField', data.price)
-        .setValue('@downField', data.down)
-    for (let i=0; i < 6; i++) {
-        pageObject.click('@firstBtn')
-    }
-    pageObject.expect.element('@message').text.to.equal(data.result)
-}
 var responses = [
     'Expect to hear from our corporate lending offices shortly at .',
     ' We are looping in Stella for this cash purchase to expedite the process for you!',
@@ -25,8 +16,8 @@ module.exports = {
 
     'Test Stella/Melissa messages': function() {
         data.forEach(data => {
-            testInputs(page, data)
-            page.navigate()
+            page.testInputs(data)
+                .navigate()
         })
     }
 }
